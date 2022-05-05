@@ -1,18 +1,5 @@
-const User = require('./User');
+// organize and import/export models
+const User = require("./User");
+const Post = require("./Post");
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-module.exports = { User }
+module.exports = { User, Post };
