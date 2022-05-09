@@ -2,8 +2,11 @@ const router = require('express').Router();
 const sequelize = require('../config/connection');
 const { Post, User, Comment } = require('../models');
 
-// creating path for home rout. displays all posts 
+// creating path for home root. displays all posts 
 router.get('/', (req, res) => {
+  // console logs session id
+  console.log(req.session)
+
     Post.findAll({
       attributes: [
         'id',
@@ -39,5 +42,14 @@ router.get('/', (req, res) => {
         res.status(500).json(err);
       });
   });
+
+  // renders the login handlebars html and checks for session, if one exists redirect to homepage
+  router.get('/login', (req, res) => {
+    if(req.session.loggedIn) {
+      res.redirect('/')
+      return
+    }
+    res.render('login')
+  })
 
 module.exports = router;

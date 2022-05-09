@@ -66,7 +66,16 @@ router.post('/', (req, res) => {
       email: req.body.email,
       password: req.body.password
     })
-      .then(dbUserData => res.json(dbUserData))
+      .then(dbUserData => {
+        // accessing sessions information. gives server easy access to user's id and name.
+        req.session.save(() => {
+          req.session.user_id = dbUserData.id
+          req.session.username = dbUserData.username
+          req.session.loggedIn = true
+
+          res.json(dbUserData)
+        })
+      })
       .catch(err => {
         console.log(err);
         res.status(500).json(err);
@@ -97,8 +106,8 @@ router.put('/:id', (req, res) => {
       });
 });
 
+// login api call
 router.post('/login', (req, res) => {
-  // expects {email: 'lernantino@gmail.com', password: 'password1234'}
   User.findOne({
     where: {
       email: req.body.email
@@ -110,14 +119,34 @@ router.post('/login', (req, res) => {
     }
 
     const validPassword = dbUserData.checkPassword(req.body.password);
+
     if (!validPassword) {
       res.status(400).json({ message: 'Incorrect password!' });
       return;
     }
 
-    res.json({ user: dbUserData, message: 'You are now logged in!' });
+    req.session.save(() => {
+      // declare session variables
+      req.session.user_id = dbUserData.id;
+      req.session.username = dbUserData.username;
+      req.session.loggedIn = true;
+
+      res.json({ user: dbUserData, message: 'You are now logged in!' });
+    });
   });
 });
+
+// logout api call
+router.post('/logout', (req, res) => {
+  // use destoy method to delete session
+  if (req.session.loggedIn) {
+    req.session.destroy(() => {
+      res.status(204).end()
+    })
+  } else {
+    res.status(404).end()
+  }
+})
 
 // DELETE /api/users/1
 router.delete('/:id', (req, res) => {

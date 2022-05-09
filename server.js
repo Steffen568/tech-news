@@ -7,6 +7,21 @@ const path = require('path')
 const exphbs = require('express-handlebars');
 const exp = require('constants');
 const hbs = exphbs.create({})
+// import sessions
+const session = require('express-session')
+const SequelizeStore = require('connect-session-sequelize')(session.Store)
+
+// config sessions
+const sess = {
+  secret: 'Super secret secret',
+  cookie: {},
+  resave: false,
+  saveUninitialized: true,
+  store: new SequelizeStore({
+    db: sequelize
+  })
+}
+
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,6 +34,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // handlebars
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
+// session 
+app.use(session(sess))
 
 // turn on routes
 app.use(routes);
