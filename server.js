@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3001;
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// cdd route using static keyward
+// css route using static keyward
 app.use(express.static(path.join(__dirname, 'public')));
 // handlebars
 app.engine('handlebars', hbs.engine);
